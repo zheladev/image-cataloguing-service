@@ -9,6 +9,7 @@ import AuthenticationController from './authentication/authentication.controller
 import config from './typeorm-config';
 import { createConnection } from 'typeorm';
 import TagController from './controllers/tag.controller';
+import ImageController from './controllers/image.controller';
 
 
 
@@ -22,13 +23,14 @@ import TagController from './controllers/tag.controller';
   const app = new App(
     [
       new TagController(),
+      new ImageController(),
     ],
     [
       bodyParser.json(),
       loggerMiddleware,
-      errorMiddleware,
       cookieParser(),
     ],
+    errorMiddleware,
     3000,
   );
   app.listen();

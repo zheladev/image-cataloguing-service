@@ -6,13 +6,19 @@ class App {
     public app: express.Application;
     public port: number;
 
-    constructor(controllers: Controller[], middlewares: any[], port: number) {
+    constructor(controllers: Controller[], middlewares: any[], errorHandler: Function, port: number) {
         this.app = express();
         this.port = port;
         
         this.initializeMiddlewares(middlewares);
         this.initializeControllers(controllers);
+        this.initializeErrorHandler(errorHandler);
+        
+        
+    }
 
+    initializeErrorHandler(errorHandler) {
+        this.app.use(errorHandler);
     }
 
     initializeControllers(controllers: Array<Controller>) {

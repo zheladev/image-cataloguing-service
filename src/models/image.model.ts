@@ -5,7 +5,7 @@ import { IsOptional } from 'class-validator';
 
 @Entity()
 class Image {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   public id: string;
 
   @Column()
@@ -16,8 +16,7 @@ class Image {
 
   @ManyToMany(type => Tag, tag => tag.id)
   @JoinTable()
-  @IsOptional()
-  public tags?: Array<string>;
+  public tags: Array<string>;
 
   @ManyToOne(type => User, user => user.images)
   public uploader?: User;

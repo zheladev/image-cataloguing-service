@@ -5,6 +5,7 @@ import Tag from "../models/tag.model";
 import CreateTagDto from "../dtos/tag.dto";
 import validationMiddleware from "../middleware/validation.middleware";
 import TagNotFoundException from "../exceptions/TagNotFoundException";
+import TagNameAlreadyExistsException from "../exceptions/TagNameAlreadyExistsException";
 
 class TagController implements Controller {
     public path = '/tags';
@@ -32,30 +33,45 @@ class TagController implements Controller {
 
     private getTagById = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const tagId = request.params.id;
-        const post = await this.tagRepository.findOne(tagId);
+        //TODO: make sure it's uuid, maybe as middleware?
+        try {
+            const tag = await this.tagRepository.findOne(tagId);
 
-        if (post) {
-            response.send(post);
-        } else {
-            next(new TagNotFoundException(tagId));
+            if (tag) {
+                response.send(tag);
+            } else {
+                throw new TagNotFoundException(tagId);
+            }
+        } catch (error) {
+            next(error);
         }
+
     }
 
     private modifyTag = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         //TODO: add modifiedBy and modifiedAt attr
         const tagId = request.params.id;
         const tagData: Tag = request.body;
-        await this.tagRepository.update(tagId, tagData);
-        const updatedTag = await this.tagRepository.findOne(tagId);
+        //TODO: make sure it's uuid, maybe as middleware?
+        try {
+            await this.tagRepository.update(tagId, tagData);
+            const updatedTag = await this.tagRepository.findOne(tagId);
 
-        if (updatedTag) {
-            response.send(updatedTag);
-        } else {
-            next(new TagNotFoundException(tagId));
+            if (updatedTag) {
+                response.send(updatedTag);
+            } else {
+                throw new TagNotFoundException(tagId);
+            }
+        } catch (error) {
+            next(error);
         }
+
     }
     private createTag = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const tagData: CreateTagDto = request.body;
+        if (await this.tagRepository.findOne({ name: tagData.name })) {
+            next(new TagNameAlreadyExistsException(tagData.name));
+        }
         const newTag = this.tagRepository.create({
             ...tagData
         });
@@ -65,13 +81,18 @@ class TagController implements Controller {
 
     private deleteTag = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const tagId: string = request.params.id;
-        const deleteResponse = await this.tagRepository.delete(tagId);
-        if (deleteResponse.affected > 0) {
-            response.send({ response: "deleted" });
-        } else {
-            next(new TagNotFoundException(tagId))
+        try {
+            const deleteResponse = await this.tagRepository.delete(tagId);
+            if (deleteResponse.affected > 0) {
+                response.send({ response: "deleted" });
+            } else {
+                throw new TagNotFoundException(tagId);
+            }
+        } catch (error) {
+            next(error);
         }
-        
+
+
     }
 }
 

@@ -4,6 +4,7 @@ import { getRepository } from "typeorm";
 import Image from "../models/image.model";
 import CreateImageDto from "../dtos/image.dto";
 import validationMiddleware from "../middleware/validation.middleware";
+import RequestWithUser from "../interfaces/requestWithUser.interface";
 
 class ImageController implements Controller {
     public path = '/images';
@@ -26,9 +27,19 @@ class ImageController implements Controller {
 
     private createImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const imageData: CreateImageDto = request.body;
+        const tagIds = imageData.tags;
+        const newTags = imageData.newTags;
+        const tags: Array<string> = [];
+        //TODO
+        if (!tagIds) {
+
+        }
+
         const newImage = this.imageRepository.create({
-            ...imageData
+            name: imageData.name,
+            path: 'aa', //change
         });
+
         await this.imageRepository.save(newImage);
         response.send(newImage);
     }

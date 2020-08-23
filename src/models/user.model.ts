@@ -1,5 +1,5 @@
 import Image from './../models/image.model';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 class User {
@@ -15,7 +15,7 @@ class User {
   @Column()
   public password: string;
 
-  @OneToMany(() => Image, (image: Image) => image.user)
+  @OneToMany(() => Image, (image: Image) => image.uploader)
   public images: Image[];
 }
 

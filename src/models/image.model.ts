@@ -1,6 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import User from './user.model';
 import Tag from './tag.model';
+import { IsOptional } from 'class-validator';
 
 @Entity()
 class Image {
@@ -13,11 +14,13 @@ class Image {
   @Column()
   public path: string;
 
-  @ManyToMany(type => Tag)
-  @ManyToOne(type => User, user => user.images)
-  public tags: Array<Tag>;
+  @ManyToMany(type => Tag, tag => tag.id)
+  @JoinTable()
+  @IsOptional()
+  public tags?: Array<string>;
 
-  public user: User;
+  @ManyToOne(type => User, user => user.images)
+  public uploader?: User;
 }
 
 export default Image;

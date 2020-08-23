@@ -13,6 +13,7 @@ class App {
         this.initializeMiddlewares(middlewares);
         this.initializeControllers(controllers);
         this.initializeErrorHandler(errorHandler);
+        this.app.use(express.static('public')); //expose public folder
         
         
     }

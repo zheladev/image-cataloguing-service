@@ -5,21 +5,24 @@ import { IsOptional } from 'class-validator';
 
 @Entity()
 class Image {
-  @PrimaryGeneratedColumn("uuid")
-  public id: string;
+    @PrimaryGeneratedColumn("uuid")
+    public id: string;
 
-  @Column()
-  public name: string;
+    @Column({ unique: true })
+    public name: string;
 
-  @Column()
-  public path: string;
+    @Column()
+    public format: string;
 
-  @ManyToMany(type => Tag, tag => tag.id)
-  @JoinTable()
-  public tags: Array<string>;
+    @Column()
+    public dir: string;
 
-  @ManyToOne(type => User, user => user.images)
-  public uploader?: User;
+    @ManyToMany(type => Tag, tag => tag.id)
+    @JoinTable()
+    public tags: Array<string>;
+
+    @ManyToOne(type => User, user => user.images)
+    public uploader?: User;
 }
 
 export default Image;

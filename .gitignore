@@ -112,3 +112,5 @@ dist
 .vscode-test
 
 docker.env
+
+public/img/*

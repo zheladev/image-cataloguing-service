@@ -3,11 +3,9 @@ import * as express from 'express';
 import * as fs from 'fs';
 import { Any, getRepository, ObjectLiteral } from "typeorm";
 import Image from "../models/image.model";
-import CreateImageDto from "../dtos/image.dto";
+import { CreateImageDto } from "../dtos/image.dto";
 import validationMiddleware from "../middleware/validation.middleware";
-import RequestWithUser from "../interfaces/requestWithUser.interface";
 import Tag from "../models/tag.model";
-import HttpException from "../exceptions/HttpException";
 import ImageNotFoundException from "../exceptions/ImageNotFoundException";
 
 class ImageController implements Controller {
@@ -27,11 +25,32 @@ class ImageController implements Controller {
     }
 
     private getAllImages = async (request: express.Request, response: express.Response) => {
+        const tags: string | undefined = request.query.custom_search as string | undefined;
+        if (tags) {
+            console.log(tags);
+            this._getImagesByTags(tags);
+        }
+
         const images = await this.imageRepository.find({ relations: ["tags"]});
         response.send(images);
     }
 
-    
+    /* TODO
+     * getImagesByTags
+     * deleteImage
+     * modifyImage
+     */
+
+    //so far only works as an AND, implement more complex searches once refactored into services
+    private _getImagesByTags = async (tags: string) => {
+        const images = await this.imageRepository
+            .createQueryBuilder('image')
+            .innerJoin('image.tags', 'tag', 'tag.name = :name', { name: 'mokou' })
+            .getMany();
+        
+            console.log('hi', images)
+    }
+
     private getImageById = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const imageId = request.params.id;
         //TODO: make sure it's uuid, maybe as middleware?
